@@ -11,5 +11,8 @@ entity forwarding_unit is
 end entity forwarding_unit;
 
 architecture forwarding_unit_arch of forwarding_unit is begin
+	out_0 <= inp_0;
+	out_1 <= inp_1;
 
+	-- TODO implement forwarding_unit_arch
 end forwarding_unit_arch;

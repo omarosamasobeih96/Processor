@@ -18,24 +18,25 @@ end entity write_back_stage;
 
 architecture write_back_stage_arch of write_back_stage is begin
 
+    -- one word instruction
 	nmem <= not inst(15);
 
-    is_mult <= nmem when inst(10) & inst(9) & inst(8) & inst(7) & inst(6) = mult_inst else '0';
+    -- unique key of multiply instruction
+    is_mult <= nmem when inst(10 downto 6) = mult_inst else '0';
 
+    -- dst = 7
     port_en <= nmem and inst(2) and inst(1) and inst(0);
-
     output_port <= low when port_en = '1' else (others => 'Z');
 
     data_bus1 <= low;
-
     data_bus2 <= high when is_mult = '1' else data;
 
-
+    -- alu write back destination 
     dec_sel1_0 <= inst(3) when inst(13) = '1' else inst(0);
     dec_sel1_1 <= inst(4) when inst(13) = '1' else inst(1);
     dec_sel1_2 <= inst(5) when inst(13) = '1' else inst(2);
 
-
+    -- data/high write back destination
     dec_sel2_0 <= inst(3) when is_mult = '1' else inst(0);
     dec_sel2_1 <= inst(4) when is_mult = '1' else inst(1);
     dec_sel2_2 <= inst(5) when is_mult = '1' else inst(2);

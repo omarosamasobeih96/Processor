@@ -18,52 +18,50 @@ architecture register_file_arch of register_file is begin
     en <= sel_rd1 or sel_rd2 or sel_wr1 or sel_wr2;
     wr <= sel_wr1 or sel_wr2;
 
-    -- TODO make selection one bit only
-
-    r0 <= databus_wr1 when sel_wr1 = x"01"
-        else databus_wr2 when sel_wr2 = x"01"
+    r0 <= databus_wr1 when sel_wr1(0) = '1'
+        else databus_wr2 when sel_wr2(0) = '1'
         else (others => 'Z');
 
-    r1 <= databus_wr1 when sel_wr1 = x"02"
-        else databus_wr2 when sel_wr2 = x"02"
+    r1 <= databus_wr1 when sel_wr1(1) = '1'
+        else databus_wr2 when sel_wr2(1) = '1'
         else (others => 'Z');
     
-    r2 <= databus_wr1 when sel_wr1 = x"04"
-        else databus_wr2 when sel_wr2 = x"04"
+    r2 <= databus_wr1 when sel_wr1(2) = '1'
+        else databus_wr2 when sel_wr2(2) = '1'
         else (others => 'Z');
     
-    r3 <= databus_wr1 when sel_wr1 = x"08"
-        else databus_wr2 when sel_wr2 = x"08"
+    r3 <= databus_wr1 when sel_wr1(3) = '1'
+        else databus_wr2 when sel_wr2(3) = '1'
         else (others => 'Z');
     
-    r4 <= databus_wr1 when sel_wr1 = x"10"
-        else databus_wr2 when sel_wr2 = x"10"
+    r4 <= databus_wr1 when sel_wr1(4) = '1'
+        else databus_wr2 when sel_wr2(4) = '1'
         else (others => 'Z');
     
-    r5 <= databus_wr1 when sel_wr1 = x"20"
-        else databus_wr2 when sel_wr2 = x"20"
+    r5 <= databus_wr1 when sel_wr1(5) = '1'
+        else databus_wr2 when sel_wr2(5) = '1'
         else (others => 'Z');
     
-    r6 <= databus_wr1 when sel_wr1 = x"40"
-        else databus_wr2 when sel_wr2 = x"40"
+    r6 <= databus_wr1 when sel_wr1(6) = '1'
+        else databus_wr2 when sel_wr2(6) = '1'
         else (others => 'Z');
     
-    databus_rd1 <= r0 when sel_rd1 = x"01"
-        else r1 when sel_rd1 = x"02"
-        else r2 when sel_rd1 = x"04"
-        else r3 when sel_rd1 = x"08"
-        else r4 when sel_rd1 = x"10"
-        else r5 when sel_rd1 = x"20"
-        else r6 when sel_rd1 = x"40"
+    databus_rd1 <= r0 when sel_rd1(0) = '1'
+        else r1 when sel_rd1(1) = '1'
+        else r2 when sel_rd1(2) = '1'
+        else r3 when sel_rd1(3) = '1'
+        else r4 when sel_rd1(4) = '1'
+        else r5 when sel_rd1(5) = '1'
+        else r6 when sel_rd1(6) = '1'
         else (others => 'Z');
         
-    databus_rd2 <= r0 when sel_rd2 = x"01"
-        else r1 when sel_rd2 = x"02"
-        else r2 when sel_rd2 = x"04"
-        else r3 when sel_rd2 = x"08"
-        else r4 when sel_rd2 = x"10"
-        else r5 when sel_rd2 = x"20"
-        else r6 when sel_rd2 = x"40"
+    databus_rd2 <= r0 when sel_rd2(0) = '1'
+        else r1 when sel_rd2(1) = '1'
+        else r2 when sel_rd2(2) = '1'
+        else r3 when sel_rd2(3) = '1'
+        else r4 when sel_rd2(4) = '1'
+        else r5 when sel_rd2(5) = '1'
+        else r6 when sel_rd2(6) = '1'
         else (others => 'Z');
     
     u0 : entity work.reg generic map (n => n) port map (r0, rst, clk, en(0), wr(0));

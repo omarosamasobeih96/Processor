@@ -16,7 +16,8 @@ architecture memory_stage_arch of memory_stage is begin
     mem_en <= (not reset) and ((inst(15) and (not inst(14))) or inst(13));
     wr <= (not inst(12)) when inst(15) = '1' and inst(14) = '0' else inst(11);
     we <= wr and mem_en;
-    actual_add <= low(9 downto 0) when we = '1' else mar(9 downto 0);
+    -- write cases address = mar while read cases address = alu
+    actual_add <= low(9 downto 0) when we = '0' else mar(9 downto 0);
 
     u : entity work.data_memory port map(clk, we, actual_add, mdr, data);
 end memory_stage_arch;
