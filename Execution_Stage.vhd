@@ -11,6 +11,7 @@ entity execution_stage is
    	flag_wr 		 					 : out std_logic;
     low, high, flag, flag_tmp            : out std_logic_vector(n - 1 downto 0);
     src, dst, inst                       : inout std_logic_vector(n - 1 downto 0));
+    -- TODO src, dst values may need forwarding to mar, mdr
 
     signal op1, op2 : std_logic_vector(n - 1 downto 0);
     signal flag_s : std_logic_vector(n - 1 downto 0);

@@ -32,7 +32,7 @@ architecture decode_stage_arch of decode_stage is begin
     d2 : entity work.decoder port map(inst(0), inst(1), inst(2), '1', reg_sel2);
 
     -- dst = 6
-    push_pc <= (not inst(15)) and inst(2) and inst(1) and (not inst(0));
+    push_pc <= nmem and inst(2) and inst(1) and (not inst(0));
 
     -- 1 word inst
     nmem <= not inst(15);

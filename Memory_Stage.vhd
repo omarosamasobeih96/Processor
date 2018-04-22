@@ -3,13 +3,13 @@ use ieee.std_logic_1164.all;
 
 entity memory_stage is
     generic (n : integer := 16; m : integer := 10);
-    port (mar, mdr      : in std_logic_vector(n - 1 downto 0);
-    reset, clk          : in std_logic;
-    data  				: out std_logic_vector(n - 1 downto 0);
-    inst, low, high     : inout std_logic_vector(n - 1 downto 0));
+    port (mar, mdr          : in std_logic_vector(n - 1 downto 0);
+    reset, clk              : in std_logic;
+    data  				    : out std_logic_vector(n - 1 downto 0);
+    inst, low, high         : inout std_logic_vector(n - 1 downto 0));
 
     signal mem_en, we, wr 	: std_logic;
-    signal actual_add 	: std_logic_vector(m - 1 downto 0);
+    signal actual_add 	    : std_logic_vector(m - 1 downto 0);
 end entity memory_stage;
 
 architecture memory_stage_arch of memory_stage is begin
