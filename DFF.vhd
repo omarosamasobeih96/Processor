@@ -12,8 +12,10 @@ begin
 	begin
 		if (rst = '1') then
 			q <= '0';
-		elsif enable = '1' and rising_edge(clk) then
-			q <= d;
+		elsif rising_edge(clk) then
+			if enable = '1' then
+				q <= d;
+			end if;
 		end if;
 	end process;
 end dff_arch;

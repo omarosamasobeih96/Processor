@@ -8,21 +8,20 @@ entity write_back_stage is
     reg_sel1, reg_sel2								: out std_logic_vector(m - 1 downto 0);
     data_bus1, data_bus2, output_port    			: out std_logic_vector(n - 1 downto 0));
 
-    signal port_en, is_mult, nmem   		  : std_logic;
+    signal port_en, is_mult, nmem	   		  : std_logic;
     signal dec_sel1_0, dec_sel1_1, dec_sel1_2 : std_logic;
     signal dec_sel2_0, dec_sel2_1, dec_sel2_2 : std_logic;
     signal en1, en2							  : std_logic;
+    
     -- TODO write the actual inst
-    constant mult_inst        				  : std_logic_vector(4 downto 0) := "10010";
+    constant mult_inst        				  : std_logic_vector(3 downto 0) := "1010";
 end entity write_back_stage;
 
 architecture write_back_stage_arch of write_back_stage is begin
-
-    -- one word instruction
 	nmem <= not inst(15);
-
+	
     -- unique key of multiply instruction
-    is_mult <= nmem when inst(10 downto 6) = mult_inst else '0';
+    is_mult <= nmem when inst(9 downto 6) = mult_inst else '0';
 
     -- dst = 7
     port_en <= nmem and inst(2) and inst(1) and inst(0);
