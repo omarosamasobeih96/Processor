@@ -22,7 +22,7 @@ end entity execution_stage;
 
 architecture execution_stage_arch of execution_stage is begin
     
-	f : entity work.forwarding_unit generic map (n => n) port map (fwdng_wb_inst, fwdng_wb_data, fwdng_wb_low, fwdng_wb_high, fwdng_mem_inst, fwdng_mem_data, fwdng_exc_low, fwdng_exc_high, inst, src, dst, op1, op2);
+	f : entity work.forwarding_unit generic map (n => n) port map (fwdng_mem_inst, fwdng_mem_data, fwdng_exc_low, fwdng_exc_high, fwdng_wb_inst, fwdng_wb_data, fwdng_wb_low, fwdng_wb_high, inst, src, dst, op1, op2);
 
 	e : entity work.exc_alu	generic map (n => n) port map  (op1, op2, inst, flag_wr_s, low, high, flag, flag_s, reset, clk);
 
