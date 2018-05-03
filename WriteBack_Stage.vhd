@@ -14,7 +14,7 @@ entity write_back_stage is
     signal en1, en2							  : std_logic;
     
     -- TODO write the actual inst
-    constant mult_inst        				  : std_logic_vector(3 downto 0) := "1010";
+    constant mult_inst        				  : std_logic_vector(3 downto 0) := "1111";
 end entity write_back_stage;
 
 architecture write_back_stage_arch of write_back_stage is begin

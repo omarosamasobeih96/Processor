@@ -54,8 +54,7 @@ architecture decode_stage_arch of decode_stage is begin
     add(15 downto 10) <= (others => '0');
     -- effective address in LDD and STD 
     add(9) <= inst(13);
-    add(8 downto 3) <= inst(11 downto 6);
-    add(2 downto 0) <= inst(5 downto 3) when inst(12) = '1' else inst(2 downto 0);
+    add(8 downto 0) <= inst(11 downto 3);
 
 	-- TODO mar, mdr not correct
     src <= input_port when port_en = '1' else immediate when is_ldm = '1' else add when inst(15) = '1' and inst(14) = '0' else data_bus1;
@@ -63,7 +62,7 @@ architecture decode_stage_arch of decode_stage is begin
 
     inst_o(15 downto 14) <= nop(15 downto 14) when reset = '1' or stall_s = '1' else inst(15 downto 14);
     inst_o(13 downto 10) <= nop(13 downto 10) when reset = '1' or stall_s = '1' else std when is_std = '1' else ldd when is_ldd = '1' else shl when is_shl = '1' else shr when is_shr = '1' else inst;
-    inst_o(9 downto 6) <= nop(9 downto 6) when reset = '1' or stall_s = '1' or inst(15) = '1' or inst(14) = '0' else inst(9 downto 6);	
+    inst_o(9 downto 6) <= nop(9 downto 6) when reset = '1' or stall_s = '1' or inst(15) = '1' else inst(9 downto 6);	
 	inst_o(5 downto 0) <= nop(5 downto 0) when reset = '1' or stall_s = '1' else inst(5 downto 0);	
 	
     stall <= stall_s;
