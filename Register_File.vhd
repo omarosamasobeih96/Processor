@@ -4,12 +4,13 @@ use ieee.std_logic_1164.all;
 entity register_file is 
 	generic (n : integer := 16);
     port (databus_wr1, databus_wr2      : in std_logic_vector(n - 1 downto 0);
-    sel_wr1, sel_wr2                    : in std_logic_vector(n - 1 downto 0);
+    sel_wr1, sel_wr2                    : in std_logic_vector(7 downto 0);
     rst, clk                            : in std_logic;
     databus_rd1, databus_rd2            : out std_logic_vector(n - 1 downto 0);
-    sel_rd1, sel_rd2                    : in std_logic_vector(n - 1 downto 0));
+    sel_rd1, sel_rd2                    : in std_logic_vector(7 downto 0));
 
-    signal r0, r1, r2, r3, r4, r5, r6, en, wr : std_logic_vector(n - 1 downto 0);
+    signal r0, r1, r2, r3, r4, r5, r6 	: std_logic_vector(n - 1 downto 0);
+    signal en, wr						: std_logic_vector(7 downto 0);
      
 end entity register_file;
 

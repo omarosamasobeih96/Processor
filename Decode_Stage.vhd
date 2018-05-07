@@ -3,7 +3,9 @@ use ieee.std_logic_1164.all;
 
 entity decode_stage is
     generic (n : integer := 16; m : integer := 8);
-    port (fwdng_mem_inst, fwdng_mem_data		     	: in std_logic_vector(n - 1 downto 0);
+    port (fwdng_wb_inst, fwdng_wb_data		     		: in std_logic_vector(n - 1 downto 0);
+    fwdng_wb_low, fwdng_wb_high   				 		: in std_logic_vector(n - 1 downto 0);
+    fwdng_mem_inst, fwdng_mem_data		     			: in std_logic_vector(n - 1 downto 0);
     fwdng_exc_low, fwdng_exc_high   				 	: in std_logic_vector(n - 1 downto 0);
     fwdng_alu_flag                    	             	: in std_logic_vector(n - 1 downto 0);
     fwdng_alu_flag_wr                                	: in std_logic;
@@ -21,19 +23,20 @@ entity decode_stage is
     signal stall_s                      		    	: std_logic;
     signal add                                      	: std_logic_vector(n - 1 downto 0);
 	signal is_ldm, is_ldd, is_std, is_shl, is_shr		: std_logic;
+	signal src_s, dst_s, dst_branch						: std_logic_vector(n - 1 downto 0);
 	
 	constant std										: std_logic_vector(3 downto 0) := "1010";					
 	constant ldd										: std_logic_vector(3 downto 0) := "1100";					
 	constant imm_cs										: std_logic_vector(3 downto 0) := "0000";
     constant nop 										: std_logic_vector(n - 1 downto 0) := (others => '0');
-	constant shl 										: std_logic_vector(3 downto 0) := (others => '1');
-	constant shr 										: std_logic_vector(3 downto 0) := (others => '1');
+	constant shl 										: std_logic_vector(3 downto 0) := "1000";
+	constant shr 										: std_logic_vector(3 downto 0) := "1001";
 	
 end entity decode_stage;
 
 architecture decode_stage_arch of decode_stage is begin
 
-    b  : entity work.branching_unit generic map (n => n) port map(fwdng_mem_inst, fwdng_mem_data, fwdng_exc_low, fwdng_exc_high, fwdng_alu_inst, fwdng_alu_low, fwdng_alu_high, inst, data_bus2, flag, fwdng_alu_flag, fwdng_alu_flag_wr, branch_res, stall_s, branch_pc);
+    b  : entity work.branching_unit generic map (n => n) port map(fwdng_alu_inst, fwdng_alu_low, fwdng_alu_high, fwdng_mem_inst, fwdng_exc_low, fwdng_exc_high, fwdng_mem_data, fwdng_wb_inst, fwdng_wb_low, fwdng_wb_high, fwdng_wb_data, inst, dst_s, src_s, flag, fwdng_alu_flag, fwdng_alu_flag_wr, branch_res, src, stall_s, dst_branch);
 
     d1 : entity work.decoder port map(inst(3), inst(4), inst(5), '1', reg_sel1);
     d2 : entity work.decoder port map(inst(0), inst(1), inst(2), '1', reg_sel2);
@@ -48,8 +51,8 @@ architecture decode_stage_arch of decode_stage is begin
     is_ldm <= inst(15) and inst(14);
     is_std <= inst(15) and (not inst(14)) and (not inst(12));
     is_ldd <= inst(15) and (not inst(14)) and inst(12);
-    is_shl <= (not inst(15)) when inst(9 downto 6) = shl else '0';
-    is_shr <= (not inst(15)) when inst(9 downto 6) = shr else '0';
+    is_shl <= nmem when inst(9 downto 6) = shl else '0';
+    is_shr <= nmem when inst(9 downto 6) = shr else '0';
     
     add(15 downto 10) <= (others => '0');
     -- effective address in LDD and STD 
@@ -57,11 +60,13 @@ architecture decode_stage_arch of decode_stage is begin
     add(8 downto 0) <= inst(11 downto 3);
 
 	-- TODO mar, mdr not correct
-    src <= input_port when port_en = '1' else immediate when is_ldm = '1' else add when inst(15) = '1' and inst(14) = '0' else data_bus1;
-    dst <= pc when is_std = '0' and is_ldd = '0' and is_shl = '0' and is_shr = '0' and inst(10) = '1' else data_bus2;
-
+    src_s <= input_port when port_en = '1' else immediate when is_ldm = '1' else add when inst(15) = '1' else data_bus1;
+    dst_s <= pc when is_std = '0' and is_ldd = '0' and is_shl = '0' and is_shr = '0' and inst(10) = '1' else data_bus2;
+	branch_pc <= dst_branch; 
+	dst <= dst_branch;
+	
     inst_o(15 downto 14) <= nop(15 downto 14) when reset = '1' or stall_s = '1' else inst(15 downto 14);
-    inst_o(13 downto 10) <= nop(13 downto 10) when reset = '1' or stall_s = '1' else std when is_std = '1' else ldd when is_ldd = '1' else shl when is_shl = '1' else shr when is_shr = '1' else inst;
+    inst_o(13 downto 10) <= nop(13 downto 10) when reset = '1' or stall_s = '1' or is_shl = '1' or is_shr = '1' else std when is_std = '1' else ldd when is_ldd = '1' else inst(13 downto 10);
     inst_o(9 downto 6) <= nop(9 downto 6) when reset = '1' or stall_s = '1' or inst(15) = '1' else inst(9 downto 6);	
 	inst_o(5 downto 0) <= nop(5 downto 0) when reset = '1' or stall_s = '1' else inst(5 downto 0);	
 	

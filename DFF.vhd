@@ -12,7 +12,7 @@ begin
 	begin
 		if (rst = '1') then
 			q <= '0';
-		elsif rising_edge(clk) then
+		elsif falling_edge(clk) then
 			if enable = '1' then
 				q <= d;
 			end if;

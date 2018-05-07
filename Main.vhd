@@ -2,20 +2,18 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity main is
-	port(clk, reset, intr : in std_logic;
-	input_port		  	  : in std_logic_vector(15 downto 0);
-	output_port			  : out std_logic_vector(15 downto 0));
+	port(mem_clk, clk, reset, intr		: in std_logic;
+	input_port		  	  				: in std_logic_vector(15 downto 0);
+	output_port			  				: out std_logic_vector(15 downto 0));
 end entity main;
 
 architecture main_arch of main is
 
 	-- fetch
-	signal ret_add		 				  		 	: std_logic_vector(15 downto 0);
-    signal returned							  	 	: std_logic; 
     signal inst_f, immediate_f, pc_out    		 	: std_logic_vector(15 downto 0);
 
 	-- decode
-	signal reg_sel_r1, reg_sel_r2					: std_logic_vector(15 downto 0);
+	signal reg_sel_r1, reg_sel_r2					: std_logic_vector(7 downto 0);
 	signal data_bus_r1, data_bus_r2					: std_logic_vector(15 downto 0);
 	signal immediate_d, pc_d, inst_d, inst_d_o		: std_logic_vector(15 downto 0);
 	signal stall, branch_res					 	: std_logic;
@@ -35,16 +33,16 @@ architecture main_arch of main is
 
     -- write back
 	signal data_w, low_w, high_w, inst_w 			: std_logic_vector(15 downto 0);
-    signal reg_sel_w1, reg_sel_w2					: std_logic_vector(15 downto 0);
+    signal reg_sel_w1, reg_sel_w2					: std_logic_vector(7 downto 0);
     signal data_bus_w1, data_bus_w2		    		: std_logic_vector(15 downto 0);
 	signal evc										: std_logic;
 begin
 
 	-- fetch
-	f : entity work.fetch_stage	port map(ret_add, branch_pc, stall, reset, intr, branch_res, clk, returned, inst_f, immediate_f, pc_out);
-
+	f : entity work.fetch_stage	port map(data_m, branch_pc, stall, reset, intr, branch_res, clk, inst_m, inst_f, immediate_f, pc_out, mem_clk); 
+		
 	-- decode
-	d : entity work.decode_stage port map(inst_m, data_m, low_m, high_m, flag_tmp, flag_wr, inst_e, low_e, high_e, flag, pc_d, 
+	d : entity work.decode_stage port map(inst_w, data_w, low_w, high_w, inst_m, data_m, low_m, high_m, flag_tmp, flag_wr, inst_e, low_e, high_e, flag, pc_d, 
 		data_bus_r1, data_bus_r2, input_port, immediate_d, reset, stall, branch_res, reg_sel_r1, reg_sel_r2, inst_d, src_d, dst_d, branch_pc, inst_d_o);
 
 	-- execute

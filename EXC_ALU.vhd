@@ -74,7 +74,7 @@ architecture exc_alu_arch of exc_alu is begin
 	high <= pd(31 downto 16);
 	
 	
-	left_sh <= op1 when op2(3) = '0' and op2(2) = '0' and op2(1) = '0' and op2(0) = '0'
+	left_sh <= x"0000" when op2(3) = '0' and op2(2) = '0' and op2(1) = '0' and op2(0) = '0'
 	else op1(14 downto 0) & x"0000" when op2(3) = '0' and op2(2) = '0' and op2(1) = '0' and op2(0) = '1'
 	else op1(13 downto 0) & x"0000" when op2(3) = '0' and op2(2) = '0' and op2(1) = '1' and op2(0) = '0'	
 	else op1(12 downto 0) & x"0000" when op2(3) = '0' and op2(2) = '0' and op2(1) = '1' and op2(0) = '1'
@@ -92,7 +92,7 @@ architecture exc_alu_arch of exc_alu is begin
 	else op1(00 downto 0) & x"0000" when op2(3) = '1' and op2(2) = '1' and op2(1) = '1' and op2(0) = '1';
 		
 	
-	right_sh <= op1 when op2(3) = '0' and op2(2) = '0' and op2(1) = '0' and op2(0) = '0'
+	right_sh <= x"0000" when op2(3) = '0' and op2(2) = '0' and op2(1) = '0' and op2(0) = '0'
 	else x"0000" & op1(15 downto 01) when op2(3) = '0' and op2(2) = '0' and op2(1) = '0' and op2(0) = '1'
 	else x"0000" & op1(15 downto 02) when op2(3) = '0' and op2(2) = '0' and op2(1) = '1' and op2(0) = '0'	
 	else x"0000" & op1(15 downto 03) when op2(3) = '0' and op2(2) = '0' and op2(1) = '1' and op2(0) = '1'
@@ -110,11 +110,12 @@ architecture exc_alu_arch of exc_alu is begin
 	else x"0000" & op1(15 downto 15) when op2(3) = '1' and op2(2) = '1' and op2(1) = '1' and op2(0) = '1';	
 
 
-	flag_cur_s(0) <= cout when oper(3) = '0' and (oper(2) = '0' or (oper(1) = '0' and oper(0) = '0')) else '0';
-	flag_cur_s(1) <= '1' when (is_mult = '1' and pd = x"00000000") else '1' when low_s = x"0000" else '0';
-	flag_cur_s(2) <= pd(31) when is_mult = '1' else low_s(15);
+	flag_cur_s(0) <= op1(15) when oper(3 downto 2) & oper(0) = "100" else op1(0) when oper(3 downto 2) & oper(0) = "101" else cout when oper(3) = '0' and (oper(2) = '0' or (oper(1) = '0' and oper(0) = '0')) else inst(0) when oper(3 downto 0) = "1110" else '0';
+	flag_cur_s(1) <= frnt_flag(1) when oper(3 downto 0) = "1110" else '1' when (is_mult = '1' and pd = x"00000000") else '1' when low_s = x"0000" else '0';
+	flag_cur_s(2) <= frnt_flag(2) when oper(3 downto 0) = "1110" else pd(31) when is_mult = '1' else low_s(15);
 	
-	f_wrs <= (not inst(15)) and inst(14) and (not inst(13));
+	-- flag write signal
+	f_wrs <= '0' when oper = "0000" else '1' when oper(3 downto 0) = "1110" else ((not inst(15)) and inst(14) and (not inst(13)));
 	
 	back_reg : entity work.internal_buffer port map(back_flag_d, back_flag, reset, clk);
 	frnt_reg : entity work.internal_buffer port map(frnt_flag_d, frnt_flag, reset, clk);
@@ -126,4 +127,5 @@ architecture exc_alu_arch of exc_alu is begin
 	
 	flag_cur <= flag_cur_s;
 	flag_wr <= f_wrs;
+	flag_interface <= frnt_flag;
 end exc_alu_arch;

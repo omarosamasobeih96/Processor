@@ -24,7 +24,7 @@ architecture write_back_stage_arch of write_back_stage is begin
     is_mult <= nmem when inst(9 downto 6) = mult_inst else '0';
 
     -- dst = 7
-    port_en <= nmem and inst(2) and inst(1) and inst(0);
+    port_en <= inst(2) and inst(1) and inst(0);
     output_port <= low when port_en = '1' else (others => 'Z');
 
     data_bus1 <= low;

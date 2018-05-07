@@ -1,1 +1,1 @@
-1- Forwarding unit calc mar, mdr as well as op1, op2 but not all the time
+1- separate clock for inst mem
