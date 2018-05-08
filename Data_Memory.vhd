@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity data_memory is
-	generic(n : integer := 16; m : integer := 10);
+	generic(n : integer := 16; m : integer := 9);
 	port(
 		clk : in std_logic;
 		we  : in std_logic;
@@ -14,7 +14,7 @@ end entity data_memory;
 
 architecture data_memory_arch of data_memory is
 
-	type ram_type is array(0 to 1023) of std_logic_vector(15 downto 0);
+	type ram_type is array(0 to 512) of std_logic_vector(15 downto 0);
 	signal ram : ram_type := (others => x"0000");
 	
 	

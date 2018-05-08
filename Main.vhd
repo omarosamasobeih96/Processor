@@ -65,7 +65,7 @@ begin
 	f_m : entity work.internal_buffer port map(immediate_f, immediate_d, reset, clk);
 
 	-- buffer between decode and execution stages
-	d_i : entity work.internal_buffer port map(inst_d_o, inst_d_o, reset, clk);
+	d_i : entity work.internal_buffer port map(inst_d_o, inst_e, reset, clk);
 	d_s : entity work.internal_buffer port map(src_d, src_e, reset, clk);
 	d_d : entity work.internal_buffer port map(dst_d, dst_e, reset, clk);
 

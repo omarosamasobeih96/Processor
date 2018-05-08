@@ -71,6 +71,6 @@ architecture register_file_arch of register_file is begin
     u3 : entity work.reg generic map (n => n) port map (r3, rst, clk, en(3), wr(3));
     u4 : entity work.reg generic map (n => n) port map (r4, rst, clk, en(4), wr(4));	
     u5 : entity work.reg generic map (n => n) port map (r5, rst, clk, en(5), wr(5));	
-    u6 : entity work.reg generic map (n => n) port map (r6, rst, clk, en(6), wr(6));
+    u6 : entity work.reg_inv generic map (n => n) port map (r6, rst, clk, en(6), wr(6));
 	
 end register_file_arch;

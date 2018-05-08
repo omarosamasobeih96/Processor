@@ -9,8 +9,6 @@ force -freeze sim:/main/input_port x\"0000\" 0
 run 70 ps
 force -freeze sim:/main/reset 0 0
 run 30 ps
-force -freeze sim:/main/input_port 0000000000000101 0
-
 
 run
 run
@@ -28,21 +26,4 @@ run
 run
 run
 run
-run
-force -freeze sim:/main/input_port 0000000000000100 0
-run
-run
-force -freeze sim:/main/input_port 0000000000000111 0
-run
-run
-run
-run
-run
-run
-run
-run
-run
-run
-run
-run
-run
+

@@ -64,7 +64,7 @@ architecture branching_unit_arch of branching_unit is begin
 		else inp;
 			
 			
-	out2 <= inp2 when inst(10) = '1' 
+	out2 <= inp2 when inst(15) = '1' 
 		else low_0 when inst(5 downto 3) = dec_sel_0 and en1_0 = '1'
 		else high_0 when is_mult_0 = '1' and inst(5 downto 3) = inst_0(5 downto 3)
 		else low_1 when inst(5 downto 3) = dec_sel_1 and en1_1 = '1'

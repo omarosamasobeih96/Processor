@@ -100,7 +100,7 @@ class MyAssembler {
 					  instruction in the RAM
 					  */
 	int dataPointer;
-
+	int finishedDataSegment;
 	string deleteComments(string line)
 	{
 		int idx = line.find(';');
@@ -146,10 +146,22 @@ class MyAssembler {
 	}
 	void lineParsing(string sLine){
 		if (sLine == "") {
-		this->readDataSegment++;
 		return;
-	}
-	if (this->readDataSegment == 0 || this->readDataSegment == 1) {
+	        }else{
+		   string tmp = "";
+		   for(int i = 0; i < sLine.size(); ++i){
+			if(sLine[i]==' ')continue;
+			if(sLine[i]== ';' && tmp==""){
+			   return;
+			}else{
+			  tmp+=sLine[i];
+			}
+		   }
+		   if(tmp[0] < '0' || tmp[0] > '9'){
+		     this->finishedDataSegment = 1;
+		   }
+		}
+	if (this->finishedDataSegment == 0) {
 		string tmp = "";
 		for (int i = 0; i < sLine.size(); i++)
 		{
@@ -157,12 +169,19 @@ class MyAssembler {
 			if (sLine[i] >= '0' && sLine[i] <= '9') {
 				tmp += sLine[i];
 			}
-			else {
-				break;
-			}
 		}
-		if (!tmp.empty()) {
-			this->DataMem[dataPointer++] = int2binary(stoi(tmp), 16);
+
+		if(this->readDataSegment == 0){
+		   this->instrMem[0] = 	int2binary(stoi(tmp), 16);
+		   codePointer = stoi(tmp);
+		   this->readDataSegment++;
+		}else if(this->readDataSegment == 1) {
+		   this->instrMem[1] = 	int2binary(stoi(tmp), 16);
+		   this->readDataSegment++;
+		}else{
+			if (!tmp.empty()) {
+				this->DataMem[dataPointer++] = int2binary(stoi(tmp), 16);
+			}
 		}
 	} else {
 		// parsing to know the instruction
@@ -180,9 +199,9 @@ class MyAssembler {
 		}
 
 		if (inst[0] == '.') {
-			cout << inst << endl;
-			if (int2binary(stoi(inst.substr(1, inst.size()-1)),16) != this->DataMem[1]) {
-				cout << inst << " is not equal to DataMem[1]" << endl;
+			if (int2binary(stoi(inst.substr(1, inst.size()-1)),16) != this->instrMem[1]) {
+				cout << inst << " is not equal to instrMem[1]" << endl;
+				cout << "\"" << instrMem[1] << "\"" << endl;
 			}
 			else {
 				codePointer = stoi(inst.substr(1, inst.size() - 1));
@@ -295,10 +314,11 @@ class MyAssembler {
 
 			}
 			else if(inst == "ldm") {
-
+				cout << "LDM : " << op1 << " ,  " << op2 << endl;
 				this->instrMem[codePointer] = this->instrMem[codePointer].substr(0,13)+
 					int2binary(op1[1] - '0', 3);
 				this->instrMem[++codePointer] = int2binary(stoi(op2),16);
+				codePointer++;
 
 			}
 			else {
@@ -352,9 +372,10 @@ public:
 		this->codeFile.open(cfPath.c_str());
 		this->dataFile.open(dfPath.c_str());
 		this->instrFile.open(ifPath.c_str());
-		this->DataMem.resize(1024);
-		this->instrMem.resize(1024);
-		this->dataPointer = this->codePointer = this->readDataSegment = this->syntaxError = 0;
+		this->DataMem.resize(512);
+		this->instrMem.resize(512);
+		this->dataPointer = 2;
+	        this->codePointer = this->readDataSegment = this->syntaxError = this->finishedDataSegment = 0;
 	}
 	void run(){
 
@@ -363,11 +384,11 @@ public:
 			getline(codeFile, line);
 			line = deleteComments(line);
 			lineParsing(line);
-			//cout << "hello : " << line << endl;
 			numLine++;
 		}
 		if (syntaxError) {
 			cout << "syntaxError at line " << numLine << " : " << line << endl;
+			cout << line.size() << endl;
 		}
 		else {
 			// print binary codes to dataFile & instrFile
@@ -420,7 +441,7 @@ public:
 			if (this->instrMem[i] == "") {
 				int x = 16;
 				while (x--) {
-					file << 'X';
+					file << '0';
 				}
 			}
 			else {
@@ -486,6 +507,5 @@ int main() {
 		cout << "Done -- Have Fun" << endl;
 	}
 
-cout << "Hello" << endl;
 	return 0;
 }
